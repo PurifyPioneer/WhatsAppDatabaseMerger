@@ -39,6 +39,7 @@ public class WhatsAppDatabaseMerger {
 	private final static String VERSION = "0.0.1a";
 
 	private static boolean stackTraceEnabled = false;
+	private static boolean loggingEnabled = false;
 	
 	//TODO Implement Logging functionality
 	//TODO GPS Coordinates fix
@@ -50,21 +51,26 @@ public class WhatsAppDatabaseMerger {
 		
 		// Check for startarguments
 		if (args.length != 0) {
-			if (args[0].equalsIgnoreCase("-e") || args[0].equals("-error") || args[0].equals("-st") || args[0].equals("-stacktrace") ) {
-				stackTraceEnabled = true;
-				System.out.println("Stacktrace has been enabled.");
-			} else {
-				System.out.println("Provided startarguments could not be understood.");
-				System.out.println("Continuing without startarguments.");
-			}
+			
+			for (int i = 0; i < args.length; i++) {
+				
+				if (args[i].equalsIgnoreCase("-e") || args[0].equals("-error") || args[0].equals("-st") || args[0].equals("-stacktrace") ) {
+					stackTraceEnabled = true;
+					System.out.println("Stacktrace has been enabled.");
+				} else if (args[i].equalsIgnoreCase("-l") || args[i].equalsIgnoreCase("-log")) {
+					loggingEnabled = true;
+					System.out.println("Logging has been enabled");
+				} else {
+					//TODO
+					System.out.println("Provided startarguments could not be understood.");
+					System.out.println("Continuing without startarguments.");
+				}
+				
+			}	
+
 		}
 
 		loadSQLDriver();
-		
-		//TODO
-		//Check file system..
-		//if all folders are existent
-		//if not create them
 		
 		// Look for databases in folder /databases
 		findDatabases();
@@ -78,7 +84,7 @@ public class WhatsAppDatabaseMerger {
 
 		//messagesHandler.compareDatabases();
 		
-		// Verbindungen schließen
+		// Verbindungen schlieï¿½en
 		closeConnections();
 		
 		System.out.println("You can exit the programm now!");
@@ -112,7 +118,7 @@ public class WhatsAppDatabaseMerger {
 		} else {
 			System.out.println("No database folder found.");
 			databaseFolder.mkdir();
-			System.out.println("Please put your databases into the created databaase folder.");
+			System.out.println("Please put your databases into the created database folder.");
 			return;
 		
 		}

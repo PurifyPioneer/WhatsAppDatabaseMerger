@@ -16,6 +16,9 @@ import java.util.ArrayList;
  */
 public class DatabaseBuilder {
 
+	//TODO EMPTY create new msgstore.db file
+	// maybe create file from sql statements
+	
 	private DatabaseContainer fixedDatabase;
 	private Connection connection = null;
 
@@ -45,7 +48,7 @@ public class DatabaseBuilder {
 			statement = connection.createStatement();
 			statement.executeUpdate("DELETE FROM messages WHERE _id != 1");
 
-			// Einträge aus fixed Tabelle in neue Tabelle eintragen
+			// Eintrï¿½ge aus fixed Tabelle in neue Tabelle eintragen
 
 			ArrayList<Message> messages = fixedDatabase.getMessages();
 
@@ -147,7 +150,7 @@ public class DatabaseBuilder {
 	}
 
 	private void closeConnection() {
-		// Datenbank verbindung schließen
+		// Datenbank verbindung schlieï¿½en
 		try {
 			connection.close();
 		} catch (SQLException e) {
