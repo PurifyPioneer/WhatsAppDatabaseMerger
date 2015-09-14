@@ -17,7 +17,7 @@ public class Message {
 	private int key_from_me;
 	private String key_id;
 	private int status;
-	private int needs_push; // wohl zu vernachlässigen
+	private int needs_push;
 	private String data;
 	private long timeStamp; // TIMESTAMP
 	private String media_url;
@@ -25,8 +25,8 @@ public class Message {
 	private int media_wa_type;
 	private int media_size;
 	private String media_name;
-	private float latitude; // GPS Koordinate
-	private float longitude; // GPS Koordinate
+	private float latitude; // GPS-COORDINATE
+	private float longitude; // GPS-COORDINATE
 	private String thumb_image;
 	private String remote_resource;
 	private long received_timeStamp; // TIMESTAMP

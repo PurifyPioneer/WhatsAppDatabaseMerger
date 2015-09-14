@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 /**
  * This programm can be used to
@@ -42,7 +41,6 @@ public class WhatsAppDatabaseMerger {
 	private static boolean loggingEnabled = false;
 	
 	//TODO Implement Logging functionality
-	//TODO GPS Coordinates fix
 	//TODO maybe implement multi language support
 	
 	public static void main(String[] args) {
@@ -81,10 +79,13 @@ public class WhatsAppDatabaseMerger {
 		// Create database image for each database(connection)
 		databaseHandler = new DatabaseHandler(connections.length);
 		readMessagesFromDatabase();
-
+		
+		// Compare databases to eachother
+		
+		//TODO
 		//messagesHandler.compareDatabases();
 		
-		// Verbindungen schlie�en
+		// Close database connections
 		closeConnections();
 		
 		System.out.println("You can exit the programm now!");
