@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.logging.Logger;
 
 /**
  * This programm can be used to
@@ -30,24 +30,28 @@ import java.util.Scanner;
  * @version 1.0
  * @since 1.0
  */
-public class WhatsAppDatabaseMerger {
-
+public class WhatsAppDatabaseMerger{
+	
+	// http://www.linux-community.de/Internal/Artikel/Print-Artikel/LinuxUser/2012/03/Datenbank-ohne-Server-mit-SQLite
+	
+	private static final String APPLICATION_NAME = "WhatsApp Database Merger";
+	private static final String VERSION = "0.0.1a";
+	
+	private static final Logger logger = Logger.getLogger(WhatsAppDatabaseMerger.class.getName());
+	
 	private static ArrayList<String> paths = new ArrayList<String>();
 	private static Connection[] connections;
 	private static DatabaseHandler databaseHandler;
-	
-	private final static String VERSION = "0.0.1a";
 
 	private static boolean stackTraceEnabled = false;
 	private static boolean loggingEnabled = false;
 	
 	//TODO Implement Logging functionality
-	//TODO GPS Coordinates fix
 	//TODO maybe implement multi language support
 	
 	public static void main(String[] args) {
 
-		System.out.println("WhatsApp Database Merger: [Version: " + VERSION + "]");
+		System.out.println(APPLICATION_NAME + ": [Version: " + VERSION + "]");
 		
 		// Check for startarguments
 		if (args.length != 0) {
@@ -61,12 +65,10 @@ public class WhatsAppDatabaseMerger {
 					loggingEnabled = true;
 					System.out.println("Logging has been enabled");
 				} else {
-					//TODO
-					System.out.println("Provided startarguments could not be understood.");
-					System.out.println("Continuing without startarguments.");
+					System.out.println("Provided startargument could not be understood. (Startargument " + i + ")");
 				}
 				
-			}	
+			}
 
 		}
 
@@ -84,7 +86,7 @@ public class WhatsAppDatabaseMerger {
 
 		//messagesHandler.compareDatabases();
 		
-		// Verbindungen schlie�en
+		// Verbindungen schliessen
 		closeConnections();
 		
 		System.out.println("You can exit the programm now!");
@@ -102,6 +104,13 @@ public class WhatsAppDatabaseMerger {
 				e.printStackTrace();
 			}
 			System.out.println("Driver could not be loaded.");
+			System.out.println("Exiting programm now.");	
+			try {
+				Thread.sleep(2500);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			System.exit(0);
 		}		
 	}
 
@@ -119,8 +128,13 @@ public class WhatsAppDatabaseMerger {
 			System.out.println("No database folder found.");
 			databaseFolder.mkdir();
 			System.out.println("Please put your databases into the created database folder.");
-			return;
-		
+			System.out.println("Exiting program now.");	
+			try {
+				Thread.sleep(2500);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			System.exit(0);
 		}
 		
 		if (!(tempFolder.exists())) {
@@ -134,16 +148,29 @@ public class WhatsAppDatabaseMerger {
 		}
 		
 		
-		for (int i = 0; i < fileList.length; i++) {
-			if (fileList[i].getName().endsWith(".db")) {
-				paths.add("jdbc:sqlite:Databases/" + fileList[i].getName());
+		if (fileList.length > 0) {
+			for (int i = 0; i < fileList.length; i++) {
+				if (fileList[i].getName().endsWith(".db")) {
+					paths.add("jdbc:sqlite:Databases/" + fileList[i].getName());
+				}
 			}
-		}
 		
-		System.out.println("Found " + paths.size() + " databases:");
-		for (int i = 0; i < paths.size(); i++) {
-			System.out.println(paths.get(i));
+			System.out.println("Found " + paths.size() + " databases:");
+			for (int i = 0; i < paths.size(); i++) {
+				System.out.println(paths.get(i));
+			}
+			
+		} else {
+			System.out.println("No databases found.");
+			System.out.println("Exiting program now.");
+			try {
+				Thread.sleep(2500);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			System.exit(0);
 		}
+
 	}
 
 	private static void createConnections() {
@@ -160,6 +187,13 @@ public class WhatsAppDatabaseMerger {
 					e.printStackTrace();
 				}
 				System.out.println("Error while creating connection " + i);
+				System.out.println("Exiting program now.");
+				try {
+					Thread.sleep(2500);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				System.exit(0);
 			} 
 		}
 		System.out.println("All connections created successful");
