@@ -84,7 +84,7 @@ public class DatabaseContainer {
 	
 	public void checkRightOrder() {
 		
-		// Gefixed Databases nach rihtiger reihenfolge überprüfen
+		// Gefixed Databases nach rihtiger reihenfolge ï¿½berprï¿½fen
 		// Sortiert nach timestamps
 		
 		int size = messages.size();
@@ -103,8 +103,8 @@ public class DatabaseContainer {
 			messageOneTimeStamp = messageOne.getTimeStamp();
 			messageTwoTimeStamp = messageTwo.getTimeStamp();
 			
-			// Wenn time stamp von nachricht nr. 1 größer ist als der von nummer 2
-			// oder wenn gleich.. weitere prüfung
+			// Wenn time stamp von nachricht nr. 1 grï¿½ï¿½er ist als der von nummer 2
+			// oder wenn gleich.. weitere prï¿½fung
 			if (messageOneTimeStamp >= messageTwoTimeStamp) {
 				
 				for (int j = 0; j < size; j++) {
@@ -130,8 +130,7 @@ public class DatabaseContainer {
 								messages.remove(i);
 								messages.add((j + 1),messageOne);
 							} else {
-								//TODO
-								//WENN ID UND TIMESTAMP GLEICH
+								//TODO WENN ID UND TIMESTAMP GLEICH
 								//SONDERFALL
 								//UNWAHRSCHEINLICH
 								System.out.println("checkRightOrder() ERROR: TIMESTAP UND ID GLEICH !");
@@ -142,7 +141,7 @@ public class DatabaseContainer {
 						
 					} else {
 						
-						//Wenn nicht gefunden entferne nachricht und füge als letzte hinzu
+						//Wenn nicht gefunden entferne nachricht und fï¿½ge als letzte hinzu
 						messages.remove(i);
 						messages.add(messageOne);
 						

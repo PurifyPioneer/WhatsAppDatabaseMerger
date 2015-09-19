@@ -1,8 +1,9 @@
 package core;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -18,18 +19,36 @@ public class DatabaseBuilder {
 
 	//TODO EMPTY create new msgstore.db file
 	// maybe create file from sql statements
+	private File fixedDatabaseFile;
 	
 	private DatabaseContainer fixedDatabase;
 	private Connection connection = null;
 
-	public DatabaseBuilder(DatabaseContainer fixedDatabase, String pathToFileInWhichMessagesShouldBePlaced) {
+	public DatabaseBuilder(DatabaseContainer fixedDatabase) {
 
-		pathToFileInWhichMessagesShouldBePlaced = "databases/msgstore_76_k.db";
+		File outputFolder = new File("Output");
+		
+		if (!(outputFolder.exists())) {
+			outputFolder.mkdir();
+			System.out.println("Output folder created.");
+		}
+		
+		fixedDatabaseFile = new File("Output/msgstore.db");
+		
+		if (!(fixedDatabaseFile.exists())) {
+			try {
+				fixedDatabaseFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("Error while creating new datbase file");
+			}
+			System.out.println("New databasefile created.");
+		}
 
 		setFixedDatabase(fixedDatabase);
 
 		loadDriver();
-		connectToDatabase(pathToFileInWhichMessagesShouldBePlaced);
+		connectToDatabase(fixedDatabaseFile.getPath());
 		fillNewTable();
 		closeConnection();
 	}
@@ -139,14 +158,14 @@ public class DatabaseBuilder {
 		}
 	}
 
-	private void connectToDatabase(String pathToFileInWhichMessagesShouldBePlaced) {
+	private void connectToDatabase(String fixedDatbaseFilePath) {
 		// Verbindungen herstellen
 		try {
-			connection = DriverManager.getConnection("jdbc:sqlite:" + pathToFileInWhichMessagesShouldBePlaced);
+			connection = DriverManager.getConnection("jdbc:sqlite:" + fixedDatbaseFilePath);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Verbindung hergestellt [" + pathToFileInWhichMessagesShouldBePlaced + "]");
+		System.out.println("Verbindung hergestellt [" + fixedDatbaseFilePath + "]");
 	}
 
 	private void closeConnection() {
