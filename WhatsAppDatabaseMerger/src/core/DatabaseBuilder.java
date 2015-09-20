@@ -2,11 +2,14 @@ package core;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+
+import database.MessagesEntry;
 
 /**
  * This class inserts the messages from the fixed database into the final file.
@@ -26,6 +29,8 @@ public class DatabaseBuilder {
 
 	public DatabaseBuilder(DatabaseContainer fixedDatabase) {
 
+		//PUT DB IN TEMP FIRST .. ALWAYS NEW FILE .. THAN COPY TO OUT AND RENAME !
+		
 		File outputFolder = new File("Output");
 		
 		if (!(outputFolder.exists())) {
@@ -42,7 +47,7 @@ public class DatabaseBuilder {
 				e.printStackTrace();
 				System.out.println("Error while creating new datbase file");
 			}
-			System.out.println("New databasefile created.");
+			System.out.println("New databasefile created.");		
 		}
 
 		setFixedDatabase(fixedDatabase);
@@ -69,12 +74,12 @@ public class DatabaseBuilder {
 
 			// Eintr�ge aus fixed Tabelle in neue Tabelle eintragen
 
-			ArrayList<Message> messages = fixedDatabase.getMessages();
+			ArrayList<MessagesEntry> messages = fixedDatabase.getMessages();
 
 			System.out.println(fixedDatabase.getMessageCount());
 
 			for (int i = 0; i < fixedDatabase.getMessageCount(); i++) {
-				Message m = messages.get(i);
+				MessagesEntry m = messages.get(i);
 				
 				statement.executeUpdate("INSERT INTO messages ("
 						+ "_id,"
@@ -119,11 +124,11 @@ public class DatabaseBuilder {
 						+ Long.toString(m.getTimeStamp()) + "," 
 						+ m.getMedia_url() + "," 
 						+ m.getMedia_mime_type() + "," 
-						+ Integer.toString(m.getMedia_wa_type()) + "," 
+						+ m.getMedia_wa_type() + "," 
 						+ Integer.toString(m.getMedia_size()) + "," 
 						+ m.getMedia_name() + ","
-						+ Float.toString(m.getLatitude()) + "," 
-						+ Float.toString(m.getLongitude()) + "," 
+						+ Double.toString(m.getLatitude()) + "," 
+						+ Double.toString(m.getLongitude()) + "," 
 						+ m.getThumb_image() + ","
 						+ m.getRemote_resource() + "," 
 						+ Long.toString(m.getreceived_timeStamp()) + "," 
@@ -166,6 +171,38 @@ public class DatabaseBuilder {
 			e.printStackTrace();
 		}
 		System.out.println("Verbindung hergestellt [" + fixedDatbaseFilePath + "]");
+		
+		//TODO FIX THIS AND RIGHT ORDER !
+		
+		Statement statement;
+		try {
+			statement = connection.createStatement();
+			
+			statement.executeUpdate("CREATE TABLE chat_list (_id INTEGER PRIMARY KEY AUTOINCREMENT, key_remote_jid TEXT UNIQUE, message_table_id INTEGER, subject TEXT, creation INTEGER, last_read_message_table_id INTEGER, last_read_receipt_sent_message_table_id INTEGER, archived INTEGER, sort_timestamp INTEGER, mod_tag INTEGER, gen REAL, my_messages INTEGER)");
+			statement.executeUpdate("CREATE TABLE group_participants (_id INTEGER PRIMARY KEY AUTOINCREMENT, gjid TEXT NOT NULL, jid TEXT NOT NULL, admin INTEGER, pending INTEGER, sent_sender_key INTEGER)");
+			statement.executeUpdate("CREATE TABLE group_participants_history (_id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp DATETIME NOT NULL, gjid TEXT NOT NULL, jid TEXT NOT NULL, action INTEGER NOT NULL, old_phash TEXT NOT NULL, new_phash TEXT NOT NULL)");
+			statement.executeUpdate("CREATE TABLE media_refs (_id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT UNIQUE, ref_count INTEGER)");
+			statement.executeUpdate("CREATE TABLE messages (_id INTEGER PRIMARY KEY AUTOINCREMENT, key_remote_jid TEXT NOT NULL, key_from_me INTEGER, key_id TEXT NOT NULL, status INTEGER, needs_push INTEGER, data TEXT, timestamp INTEGER, media_url TEXT, media_mime_type TEXT, media_wa_type TEXT, media_size INTEGER, media_name TEXT, latitude REAL, longitude REAL, thumb_image TEXT, remote_resource TEXT, received_timestamp INTEGER, send_timestamp INTEGER, receipt_server_timestamp INTEGER, receipt_device_timestamp INTEGER, raw_data BLOB, media_hash TEXT, recipient_count INTEGER, media_duration INTEGER, origin INTEGER, read_device_timestamp INTEGER, played_device_timestamp INTEGER, media_caption TEXT, participant_hash TEXT)");
+			//TODO FIX ERROR also INVESTIGATE 
+			statement.executeUpdate("CREATE VIRTUAL TABLE messages_fts USING FTS3()");
+			statement.executeUpdate("CREATE TABLE 'messages_fts_content'(docid INTEGER PRIMARY KEY, 'c0content')");
+			statement.executeUpdate("CREATE TABLE 'messages_fts_segdir'(level INTEGER,idx INTEGER,start_block INTEGER,leaves_end_block INTEGER,end_block INTEGER,root BLOB,PRIMARY KEY(level, idx))");
+			statement.executeUpdate("CREATE TABLE 'messages_fts_segments'(blockid INTEGER PRIMARY KEY, block BLOB)");
+			statement.executeUpdate("CREATE TABLE props (_id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT UNIQUE, value TEXT)");
+			statement.executeUpdate("CREATE TABLE receipts (_id INTEGER PRIMARY KEY AUTOINCREMENT, key_remote_jid TEXT NOT NULL, key_id TEXT NOT NULL, remote_resource TEXT, receipt_device_timestamp INTEGER, read_device_timestamp INTEGER, played_device_timestamp INTEGER)");
+			//statement.executeUpdate("CREATE TABLE sqlite_sequence(name,seq)");
+			
+			statement.executeUpdate("CREATE INDEX group_participants_history_index on group_participants_history (gjid)");
+			statement.executeUpdate("CREATE UNIQUE INDEX group_participants_index on group_participants (gjid, jid)");
+			statement.executeUpdate("CREATE INDEX media_type_index on messages (media_wa_type)");
+			statement.executeUpdate("CREATE INDEX media_type_jid_index on messages (key_remote_jid, media_wa_type)");
+			statement.executeUpdate("CREATE UNIQUE INDEX messages_key_index on messages (key_remote_jid, key_from_me, key_id)");
+			statement.executeUpdate("CREATE INDEX receipts_key_index on receipts (key_remote_jid, key_id)");
+			
+			statement.executeUpdate("CREATE TRIGGER messages_bd_trigger BEFORE DELETE ON messages BEGIN DELETE FROM messages_fts WHERE docid=old._id; END");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void closeConnection() {

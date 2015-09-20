@@ -1,4 +1,9 @@
-package core;
+package database;
+
+import java.sql.Blob;
+import java.sql.SQLException;
+
+import javax.sql.rowset.serial.SerialBlob;
 
 /**
  * The representation of an whatsapp
@@ -8,10 +13,11 @@ package core;
  * @version 1.0
  * @since 1.0
  */
-public class Message {
+public class MessagesEntry {
 	
 	private boolean messageAlreadyChecked = false;
 
+	//GET TYPE FROM SQL CREATE STAEMENT !
 	private int _id;
 	private String key_remote_jid;
 	private int key_from_me;
@@ -22,18 +28,18 @@ public class Message {
 	private long timeStamp; // TIMESTAMP
 	private String media_url;
 	private String media_mime_type;
-	private int media_wa_type;
+	private String media_wa_type;
 	private int media_size;
 	private String media_name;
-	private float latitude; // GPS-COORDINATE
-	private float longitude; // GPS-COORDINATE
+	private double latitude; // GPS-COORDINATE
+	private double longitude; // GPS-COORDINATE
 	private String thumb_image;
 	private String remote_resource;
 	private long received_timeStamp; // TIMESTAMP
 	private long send_timeStamp; // TIMESTAMP
 	private long receipt_server_timeStamp; // TIMESTAMP
 	private long receipt_device_timeStamp; // TIMESTAMP
-	private String raw_data;
+	private Blob raw_data;
 	private String media_hash;
 	private int recipient_count;
 	private int media_duration;
@@ -43,11 +49,11 @@ public class Message {
 	private String media_caption;
 	private String participant_hash;
 
-	public Message(int _id, String key_remote_jid, int key_from_me, String key_id, int status,
+	public MessagesEntry(int _id, String key_remote_jid, int key_from_me, String key_id, int status,
 			int needs_push, String data, long timeStamp, String media_url, String media_mime_type, 
-			int media_wa_type, int media_size, String media_name, float latitude, float longitude, String thumb_image, String remote_resource,
+			String media_wa_type, int media_size, String media_name, double latitude, double longitude, String thumb_image, String remote_resource,
 			long received_timeStamp, long send_timeStamp, long receipt_server_timeStamp, long receipt_device_timeStamp,
-			String raw_data, String media_hash, int recipient_count, int media_duaration, int origin, long read_device_timeStamp,
+			byte[] raw_data, String media_hash, int recipient_count, int media_duaration, int origin, long read_device_timeStamp,
 			long played_device_timeStamp, String media_caption, String participant_hash) {
 		
 		set_id(_id);
@@ -56,7 +62,7 @@ public class Message {
 		setKey_id(key_id);
 		setStatus(status);
 		setNeeds_push(needs_push);
-		setData(raw_data);
+		setData(data);
 		setTimeStamp(timeStamp);
 		setMedia_url(media_url);
 		setMedia_mime_type(media_mime_type);
@@ -83,8 +89,6 @@ public class Message {
 
 	}
 	
-	
-	// GETTER AND SETTER ////////////////////////////////////////////////////////////////
 	public boolean getMessageAlreadyChecked() {
 		return messageAlreadyChecked;
 	}
@@ -177,11 +181,11 @@ public class Message {
 		this.media_mime_type = media_mime_type;
 	}
 
-	public int getMedia_wa_type() {
+	public String getMedia_wa_type() {
 		return media_wa_type;
 	}
 
-	private void setMedia_wa_type(int media_wa_type) {
+	private void setMedia_wa_type(String media_wa_type) {
 		this.media_wa_type = media_wa_type;
 	}
 
@@ -201,19 +205,19 @@ public class Message {
 		this.media_name = media_name;
 	}
 
-	public float getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
 
-	private void setLatitude(float latitude) {
+	private void setLatitude(double latitude) {
 		this.latitude = latitude;
 	}
 
-	public float getLongitude() {
+	public double getLongitude() {
 		return longitude;
 	}
 
-	private void setLongitude(float longitude) {
+	private void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}
 
@@ -265,12 +269,18 @@ public class Message {
 		this.receipt_device_timeStamp = receipt_device_timeStamp;
 	}
 
-	public String getRaw_data() {
+	public Blob getRaw_data() {
 		return raw_data;
 	}
 
-	private void setRaw_data(String raw_data) {
-		this.raw_data = raw_data;
+	private void setRaw_data(byte[] raw_data) {	
+		if (raw_data != null) {
+			try {
+				this.raw_data = new SerialBlob(raw_data);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public String getMedia_hash() {
@@ -336,9 +346,8 @@ public class Message {
 	private void setparticipant_hash(String participant_hash) {
 		this.participant_hash = participant_hash;
 	}
-	/////////////////////////////////////////////////////////////////////////////////////
 	
-	public boolean compare(Message message) {
+	public boolean compare(MessagesEntry message) {
 		//TODO Comparison has to be exact.. hashWert // hashwert schnell und exakt
 		if (!((this.getTimeStamp() == message.getTimeStamp()) && (this.getData().equalsIgnoreCase(message.getData())))) {
 			return true;

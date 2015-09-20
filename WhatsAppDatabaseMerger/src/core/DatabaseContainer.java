@@ -2,39 +2,111 @@ package core;
 
 import java.util.ArrayList;
 
+import database.ChatListEntry;
+import database.GroupParticipantsEntry;
+import database.GroupParticipantsHistoryEntry;
+import database.MediaRefsEntry;
+import database.MessagesEntry;
+import database.MessagesFtsContentEntry;
+import database.MessagesFtsSegdirEntry;
+import database.MessagesFtsSegmentsEntry;
+import database.PropsEntry;
+import database.ReceiptsEntry;
+import database.SqliteSequenceEntry;
+
+/**
+ * Representation of a whatsapp
+ * database. (msgstore database)
+ * 
+ * @author Pommesfee
+ * @version 1.0
+ * @since 1.0
+ */
 public class DatabaseContainer {
 
 	private int id;
 	
-	private ArrayList<Message> messages;
-	private int messageCount = 0;
-	private String databasePath = "";
+	private ArrayList<ChatListEntry> chatList;
+	private ArrayList<GroupParticipantsEntry> groupParticipants;
+	private ArrayList<GroupParticipantsHistoryEntry> groupParticipantsHistory;
+	private ArrayList<MediaRefsEntry> mediaRefs;
+	private ArrayList<MessagesEntry> messages;
+	private ArrayList<MessagesFtsContentEntry> messagesFtscontent;
+	private ArrayList<MessagesFtsSegdirEntry> messagesFtsSegdir;
+	private ArrayList<MessagesFtsSegmentsEntry> messagesFtsSegments;
+	private ArrayList<PropsEntry> props;
+	private ArrayList<ReceiptsEntry> receipts;
+	private ArrayList<SqliteSequenceEntry> sqliteSequence;
+	
+	private String databasePath = null;
 	
 	public DatabaseContainer(int id) {
 
 		setID(id);
-		this.messages = new ArrayList<Message>();
+		setChatList(new ArrayList<ChatListEntry>());
+		setGroupParticipants(new ArrayList<GroupParticipantsEntry>());
+		setGroupParticipantsHistory(new ArrayList<GroupParticipantsHistoryEntry>());
+		setMediaRefs(new ArrayList<MediaRefsEntry>());
+		setMessages(new ArrayList<MessagesEntry>());
+		setMessagesFtscontent(new ArrayList<MessagesFtsContentEntry>());
+		setMessagesFtsSegdir(new ArrayList<MessagesFtsSegdirEntry>());
+		setMessagesFtsSegments(new ArrayList<MessagesFtsSegmentsEntry>());
+		setProps(new ArrayList<PropsEntry>());
+		setReceipts(new ArrayList<ReceiptsEntry>());
+		setSqliteSequence(new ArrayList<SqliteSequenceEntry>());
+		
 		
 	}
 	
 	public DatabaseContainer(int id, String databasePath) {
 		
-		setID(id);
+		this(id);
 		setDatabasePath(databasePath);
-		this.messages = new ArrayList<Message>();
 		
 	}
 
-	public void addMessage(Message message) {
-		
-		messages.add(message);
-		messageCount++;
-		
+	public void addChatListEntry(ChatListEntry chatListEntry) {
+		getChatList().add(chatListEntry);
 	}
 	
-	// GETTER AND SETTER //////////////////////////////////////////////////////////////
-	public ArrayList<Message> getMessages() {
-		return messages;
+	public void addGroupParticipantsEntry(GroupParticipantsEntry groupParticipantsEntry) {
+		getGroupParticipants().add(groupParticipantsEntry);
+	}
+	
+	public void addGroupParticipantsHistoryEntry(GroupParticipantsHistoryEntry GroupParticipantsHistoryEntry) {
+		getGroupParticipantsHistory().add(GroupParticipantsHistoryEntry);
+	}
+	
+	public void addMediaRefsEntry(MediaRefsEntry MediaRefsEntry) {
+		getMediaRefs().add(MediaRefsEntry);
+	}
+	
+	public void addMessageEntry(MessagesEntry messageEntry) {	
+		getMessages().add(messageEntry);	
+	}
+	
+	public void addMessagesFtsContentEntry(MessagesFtsContentEntry messagesFtsContentEntry) {
+		getMessagesFtscontent().add(messagesFtsContentEntry);
+	}
+	
+	public void addMessagesFtsSegdirEntry(MessagesFtsSegdirEntry messagesFtsSegdirEntry) {
+		getMessagesFtsSegdir().add(messagesFtsSegdirEntry);
+	}
+	
+	public void addMEssagesFtsSegmentsEntry(MessagesFtsSegmentsEntry messagesFtsSegmentsEntry) {
+		getMessagesFtsSegments().add(messagesFtsSegmentsEntry);
+	}
+	
+	public void addPropsEntry(PropsEntry PropsEntry) {
+		getProps().add(PropsEntry);
+	}
+	
+	public void addReceiptsEntry(ReceiptsEntry receiptsEntry) {
+		getReceipts().add(receiptsEntry);
+	}
+	
+	public void addSqliteSequenceEntry(SqliteSequenceEntry SqlLiteSequenceEntry) {
+		getSqliteSequence().add(SqlLiteSequenceEntry);
 	}
 	
 	public int getID() {
@@ -46,10 +118,10 @@ public class DatabaseContainer {
 	}
 	
 	public int getMessageCount() {
-		return messageCount;
+		return getMessages().size();
 	}
 	
-	public void setDatabasePath(String databasePath) {
+	private void setDatabasePath(String databasePath) {
 		this.databasePath = databasePath;
 	}
 	
@@ -57,14 +129,101 @@ public class DatabaseContainer {
 		return this.databasePath;
 	}
 
-	public Message getMessage(int index) {
+	public MessagesEntry getMessage(int index) {
 		return getMessages().get(index);
 	}
-	/////////////////////////////////////////////////////////////////////////////////////
 
-	public boolean isMessageInDatabase(Message message) {
+	public ArrayList<ChatListEntry> getChatList() {
+		return chatList;
+	}
+
+	private void setChatList(ArrayList<ChatListEntry> chatList) {
+		this.chatList = chatList;
+	}
+
+	public ArrayList<GroupParticipantsEntry> getGroupParticipants() {
+		return groupParticipants;
+	}
+
+	private void setGroupParticipants(ArrayList<GroupParticipantsEntry> groupParticipants) {
+		this.groupParticipants = groupParticipants;
+	}
+
+	public ArrayList<GroupParticipantsHistoryEntry> getGroupParticipantsHistory() {
+		return groupParticipantsHistory;
+	}
+
+	private void setGroupParticipantsHistory(ArrayList<GroupParticipantsHistoryEntry> groupParticipantsHistory) {
+		this.groupParticipantsHistory = groupParticipantsHistory;
+	}
+
+	public ArrayList<MediaRefsEntry> getMediaRefs() {
+		return mediaRefs;
+	}
+
+	private void setMediaRefs(ArrayList<MediaRefsEntry> mediaRefs) {
+		this.mediaRefs = mediaRefs;
+	}
+
+	public ArrayList<MessagesEntry> getMessages() {
+		return messages;
+	}
+	
+	private void setMessages(ArrayList<MessagesEntry> messages) {
+		this.messages = messages;
+	}
+
+	public ArrayList<MessagesFtsContentEntry> getMessagesFtscontent() {
+		return messagesFtscontent;
+	}
+
+	private void setMessagesFtscontent(ArrayList<MessagesFtsContentEntry> messagesFtscontent) {
+		this.messagesFtscontent = messagesFtscontent;
+	}
+
+	public ArrayList<MessagesFtsSegdirEntry> getMessagesFtsSegdir() {
+		return messagesFtsSegdir;
+	}
+
+	private void setMessagesFtsSegdir(ArrayList<MessagesFtsSegdirEntry> messagesFtsSegdir) {
+		this.messagesFtsSegdir = messagesFtsSegdir;
+	}
+
+	public ArrayList<MessagesFtsSegmentsEntry> getMessagesFtsSegments() {
+		return messagesFtsSegments;
+	}
+
+	private void setMessagesFtsSegments(ArrayList<MessagesFtsSegmentsEntry> messagesFtsSegments) {
+		this.messagesFtsSegments = messagesFtsSegments;
+	}
+
+	public ArrayList<PropsEntry> getProps() {
+		return props;
+	}
+
+	private void setProps(ArrayList<PropsEntry> props) {
+		this.props = props;
+	}
+
+	public ArrayList<ReceiptsEntry> getReceipts() {
+		return receipts;
+	}
+
+	private void setReceipts(ArrayList<ReceiptsEntry> receipts) {
+		this.receipts = receipts;
+	}
+
+	public ArrayList<SqliteSequenceEntry> getSqliteSequence() {
+		return sqliteSequence;
+	}
+
+	private void setSqliteSequence(ArrayList<SqliteSequenceEntry> sqliteSequence) {
+		this.sqliteSequence = sqliteSequence;
+	}
+
+	public boolean isMessageInDatabase(MessagesEntry message) {
 		
-		Message thisMessage;
+		MessagesEntry thisMessage;
 		
 		for (int i = 0; i < messages.size(); i++) {
 			
@@ -80,7 +239,6 @@ public class DatabaseContainer {
 		
 		return false;
 	}
-
 	
 	public void checkRightOrder() {
 		
@@ -89,11 +247,11 @@ public class DatabaseContainer {
 		
 		int size = messages.size();
 		
-		Message messageOne;
-		Message messageTwo;
+		MessagesEntry messageOne;
+		MessagesEntry messageTwo;
 		long messageOneTimeStamp = 0;
 		long messageTwoTimeStamp = 0;
-		Message messageToCheck;
+		MessagesEntry messageToCheck;
 		
 		for (int i = 0; i < size; i++) {
 			
