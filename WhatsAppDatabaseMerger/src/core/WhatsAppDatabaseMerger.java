@@ -50,6 +50,10 @@ public class WhatsAppDatabaseMerger{
 		DatabaseHandler databaseHandler;
 		databaseHandler = new DatabaseHandler();
 		
+		@SuppressWarnings("unused")
+		DatabaseBuilder databaseBuilder;
+		databaseBuilder = new DatabaseBuilder(null);
+		
 		System.out.println("You can exit the programm now!");
 	}
 

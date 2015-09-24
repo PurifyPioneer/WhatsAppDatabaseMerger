@@ -24,6 +24,8 @@ import database.SqliteSequenceEntry;
  */
 public class DatabaseContainer {
 
+	//TODO SEPARATE Methods
+	
 	private int id;
 	
 	private ArrayList<ChatListEntry> chatList;
@@ -129,10 +131,6 @@ public class DatabaseContainer {
 		return this.databasePath;
 	}
 
-	public MessagesEntry getMessage(int index) {
-		return getMessages().get(index);
-	}
-
 	public ArrayList<ChatListEntry> getChatList() {
 		return chatList;
 	}
@@ -225,9 +223,8 @@ public class DatabaseContainer {
 		
 		MessagesEntry thisMessage;
 		
-		for (int i = 0; i < messages.size(); i++) {
-			
-			thisMessage = messages.get(i);
+		for (int i = 0; i < getMessages().size(); i++) {
+			thisMessage = getMessages().get(i);
 			
 			if (!(thisMessage.getMessageAlreadyChecked())) {
 				if (thisMessage.compare(message)) {
@@ -240,9 +237,20 @@ public class DatabaseContainer {
 		return false;
 	}
 	
+	public DatabaseContainer compareDatabase(DatabaseContainer database) {
+		
+		DatabaseContainer tempDB = new DatabaseContainer(Integer.MAX_VALUE);
+		
+		
+		
+		return tempDB;
+	}
+	
 	public void checkRightOrder() {
 		
-		// Gefixed Databases nach rihtiger reihenfolge �berpr�fen
+		//TODO port to croresponding class
+		
+		// Gefixed Databases nach rihtiger reihenfolge ueberpruefen
 		// Sortiert nach timestamps
 		
 		int size = messages.size();
