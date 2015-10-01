@@ -78,5 +78,62 @@ public class ReceiptsEntry {
 	private void setPlayed_device_timestamp(long played_device_timestamp) {
 		this.played_device_timestamp = played_device_timestamp;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + _id;
+		result = prime * result + ((key_id == null) ? 0 : key_id.hashCode());
+		result = prime * result
+				+ ((key_remote_jid == null) ? 0 : key_remote_jid.hashCode());
+		result = prime
+				* result
+				+ (int) (played_device_timestamp ^ (played_device_timestamp >>> 32));
+		result = prime
+				* result
+				+ (int) (read_device_timestamp ^ (read_device_timestamp >>> 32));
+		result = prime
+				* result
+				+ (int) (receipt_device_timestamp ^ (receipt_device_timestamp >>> 32));
+		result = prime * result
+				+ ((remote_resource == null) ? 0 : remote_resource.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ReceiptsEntry other = (ReceiptsEntry) obj;
+		if (_id != other._id)
+			return false;
+		if (key_id == null) {
+			if (other.key_id != null)
+				return false;
+		} else if (!key_id.equals(other.key_id))
+			return false;
+		if (key_remote_jid == null) {
+			if (other.key_remote_jid != null)
+				return false;
+		} else if (!key_remote_jid.equals(other.key_remote_jid))
+			return false;
+		if (played_device_timestamp != other.played_device_timestamp)
+			return false;
+		if (read_device_timestamp != other.read_device_timestamp)
+			return false;
+		if (receipt_device_timestamp != other.receipt_device_timestamp)
+			return false;
+		if (remote_resource == null) {
+			if (other.remote_resource != null)
+				return false;
+		} else if (!remote_resource.equals(other.remote_resource))
+			return false;
+		return true;
+	}
 	
 }

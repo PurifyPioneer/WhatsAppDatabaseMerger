@@ -133,5 +133,69 @@ public class ChatListEntry{
 		//TODO
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + _id;
+		result = prime * result + archived;
+		result = prime * result + creation;
+		long temp;
+		temp = Double.doubleToLongBits(gen);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result
+				+ ((key_remote_jid == null) ? 0 : key_remote_jid.hashCode());
+		result = prime * result + last_read_receipt_sent_messages_table_id;
+		result = prime * result + last_read_table_id;
+		result = prime * result + message_table_id;
+		result = prime * result + mod_tag;
+		result = prime * result + my_messages;
+		result = prime * result + sort_timestamp;
+		result = prime * result + ((subject == null) ? 0 : subject.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ChatListEntry other = (ChatListEntry) obj;
+		if (_id != other._id)
+			return false;
+		if (archived != other.archived)
+			return false;
+		if (creation != other.creation)
+			return false;
+		if (Double.doubleToLongBits(gen) != Double.doubleToLongBits(other.gen))
+			return false;
+		if (key_remote_jid == null) {
+			if (other.key_remote_jid != null)
+				return false;
+		} else if (!key_remote_jid.equals(other.key_remote_jid))
+			return false;
+		if (last_read_receipt_sent_messages_table_id != other.last_read_receipt_sent_messages_table_id)
+			return false;
+		if (last_read_table_id != other.last_read_table_id)
+			return false;
+		if (message_table_id != other.message_table_id)
+			return false;
+		if (mod_tag != other.mod_tag)
+			return false;
+		if (my_messages != other.my_messages)
+			return false;
+		if (sort_timestamp != other.sort_timestamp)
+			return false;
+		if (subject == null) {
+			if (other.subject != null)
+				return false;
+		} else if (!subject.equals(other.subject))
+			return false;
+		return true;
+	}
 	
 }

@@ -37,6 +37,37 @@ public class MediaRefsEntry {
 	private void setRef_count(int ref_count) {
 		this.ref_count = ref_count;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + _id;
+		result = prime * result + ((path == null) ? 0 : path.hashCode());
+		result = prime * result + ref_count;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MediaRefsEntry other = (MediaRefsEntry) obj;
+		if (_id != other._id)
+			return false;
+		if (path == null) {
+			if (other.path != null)
+				return false;
+		} else if (!path.equals(other.path))
+			return false;
+		if (ref_count != other.ref_count)
+			return false;
+		return true;
+	}
 	
 	
 }
