@@ -78,5 +78,45 @@ public class MessagesFtsSegdirEntry {
 			}
 		}
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + end_block;
+		result = prime * result + idx;
+		result = prime * result + leaves_end_block;
+		result = prime * result + level;
+		result = prime * result + ((root == null) ? 0 : root.hashCode());
+		result = prime * result + start_block;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MessagesFtsSegdirEntry other = (MessagesFtsSegdirEntry) obj;
+		if (end_block != other.end_block)
+			return false;
+		if (idx != other.idx)
+			return false;
+		if (leaves_end_block != other.leaves_end_block)
+			return false;
+		if (level != other.level)
+			return false;
+		if (root == null) {
+			if (other.root != null)
+				return false;
+		} else if (!root.equals(other.root))
+			return false;
+		if (start_block != other.start_block)
+			return false;
+		return true;
+	}
 	
 }
