@@ -1,21 +1,21 @@
 package core;
 
 /**
- * This programm can be used to
+ * This program can be used to
  * combine different WhatsApp-backups.
  * 
- * For this programm to function it is
+ * For this program to function it is
  * essential that you have your decrypted
- * Whatsapp message database (msgstore.db)!
+ * Whatsapp database (msgstore.db)!
  * 
- * Eventually this programm will support the extraction
- * and decryption of your Whatsapp-backup but
- * time will tell and there are other great programms
+ * Eventually this program will support the extraction
+ * and decryption of your Whatsapp backup but
+ * time will tell and there are other great programs
  * for this purpose.
  * 
- * Please note that this programm at the moment only handels
- * your messages, so you may need to readd contacs.
- * But this is only a minor concern and will adressed later.
+ * Please note that this program at the moment only handles
+ * your messages, so you may need to re-add contacts by yourself.
+ * But this is only a minor concern and will be addressed later.
  * 
  * @author Pommesfee
  * @version 1.0
@@ -23,18 +23,13 @@ package core;
  */
 public class WhatsAppDatabaseMerger{
 	
+	// Title and Version
 	private static final String APPLICATION_NAME = "WhatsApp Database Merger";
 	private static final String VERSION = "0.0.1a";
-	
-	//TODO IMPLEMENT LOGGING
-	//private static final Logger logger = Logger.getLogger(WhatsAppDatabaseMerger.class.getName());
-	
-	//TODO FIX PUBLIC PRIVATE
-	public static boolean stackTraceEnabled = true;
-	@SuppressWarnings("unused")
+
+	// Indicators if Stacktrace/Logging are enabled
+	private static boolean stackTraceEnabled = true;
 	private static boolean loggingEnabled = false;
-	
-	//TODO maybe implement multi language support
 	
 	public static void main(String[] args) {
 
@@ -43,16 +38,17 @@ public class WhatsAppDatabaseMerger{
 		// Check for start arguments
 		handleStartArguments(args);
 
+		// Load SQL Driver
 		loadSQLDriver();
 		
 		// Create database image for each database(connection)
-		@SuppressWarnings("unused")
 		DatabaseHandler databaseHandler;
 		databaseHandler = new DatabaseHandler();
 		
+		//Create new Database
 		@SuppressWarnings("unused")
 		DatabaseBuilder databaseBuilder;
-		databaseBuilder = new DatabaseBuilder(null);
+		databaseBuilder = new DatabaseBuilder(databaseHandler.getFixedDatabase());
 		
 		System.out.println("You can exit the programm now!");
 	}
@@ -60,9 +56,7 @@ public class WhatsAppDatabaseMerger{
 	private static void handleStartArguments(String[] args) {
 		
 		if (args.length != 0) {
-			
 			for (int i = 0; i < args.length; i++) {
-				
 				if (args[i].equalsIgnoreCase("-e") || args[0].equals("-error") || args[0].equals("-st") || args[0].equals("-stacktrace") ) {
 					stackTraceEnabled = true;
 					System.out.println("Stacktrace has been enabled.");
@@ -99,6 +93,14 @@ public class WhatsAppDatabaseMerger{
 			}
 			System.exit(-1);
 		}		
+	}
+	
+	public static boolean isStackTraceEnabled() {
+		return WhatsAppDatabaseMerger.stackTraceEnabled;
+	}
+	
+	public static boolean isLoggingEnabled() {
+		return WhatsAppDatabaseMerger.loggingEnabled;
 	}
 
 }

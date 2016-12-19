@@ -29,10 +29,13 @@ import database.SqliteSequenceEntry;
  */
 public class DatabaseHandler {
 
+	// The connections to all found databases are stored here
 	private Connection[] connections = null;
 
+	// This List contains all databases that have been found and imported
 	private ArrayList<DatabaseContainer> databases;
 
+	// Contains the fixed database after all databases have been compared
 	private DatabaseContainer fixedDatabase;
 
 	public DatabaseHandler() {
@@ -41,7 +44,7 @@ public class DatabaseHandler {
 		createConnections();
 		readDatabases();
 
-		// compareDatabases();
+		compareDatabases();
 
 		closeConnections();
 	}
@@ -49,6 +52,9 @@ public class DatabaseHandler {
 	private void findDatabases() {
 
 		// TODO Implement method with file checker
+		
+		// TODO Move to main class or seperate from db handler !
+		
 		File databaseFolder = new File("Databases");
 		File tempFolder = new File("Temp");
 		File outputFolder = new File("Output");
@@ -125,7 +131,7 @@ public class DatabaseHandler {
 				connections[i] = DriverManager.getConnection(databases.get(i).getDatabasePath());
 				System.out.println("Connection " + (i + 1) + " created [" + databases.get(i).getDatabasePath() + "]");
 			} catch (Exception e) {
-				if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+				if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 					e.printStackTrace();
 				}
 				System.out.println("Error while creating connection " + i);
@@ -151,17 +157,17 @@ public class DatabaseHandler {
 		for (int i = 0; i < connections.length; i++) {
 			database = databases.get(i);
 			System.out.println((connections.length - i) + " Databases left...");
-			readChatListFromDatabase(database, statement, resultSet);
-			readGroupParticipantsFromDatabase(database, statement, resultSet);
-			readGroupParticipantsHistoryFromDatabase(database, statement, resultSet);
-			readMediaRefsFromDatabase(database, statement, resultSet);
+			//readChatListFromDatabase(database, statement, resultSet);
+			//readGroupParticipantsFromDatabase(database, statement, resultSet);
+			//readGroupParticipantsHistoryFromDatabase(database, statement, resultSet);
+			//readMediaRefsFromDatabase(database, statement, resultSet);
 			readMessagesFromDatabase(database, statement, resultSet);
-			readMessagesFtsContentFromDatabase(database, statement, resultSet);
-			readMessagesFtsSegdirFromDatabase(database, statement, resultSet);
-			readMessagesFtsSegmentsFromDatabase(database, statement, resultSet);
-			readPropsFromDatabase(database, statement, resultSet);
-			readReceiptsFromDatabase(database, statement, resultSet);
-			readSqliteSequenceFromDatabase(database, statement, resultSet);
+			//readMessagesFtsContentFromDatabase(database, statement, resultSet);
+			//readMessagesFtsSegdirFromDatabase(database, statement, resultSet);
+			//readMessagesFtsSegmentsFromDatabase(database, statement, resultSet);
+			//readPropsFromDatabase(database, statement, resultSet);
+			//readReceiptsFromDatabase(database, statement, resultSet);
+			//readSqliteSequenceFromDatabase(database, statement, resultSet);
 		}
 	}
 
@@ -171,7 +177,7 @@ public class DatabaseHandler {
 			statement = connections[database.getID()].createStatement();
 			resultSet = statement.executeQuery("SELECT * FROM chat_list");
 		} catch (Exception e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while reading from database " + database.getID());
@@ -188,7 +194,7 @@ public class DatabaseHandler {
 						resultSet.getInt("my_messages")));
 			}
 		} catch (SQLException e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while parsing chat_list_entry from database " + database.getID());
@@ -203,7 +209,7 @@ public class DatabaseHandler {
 			statement = connections[database.getID()].createStatement();
 			resultSet = statement.executeQuery("SELECT * FROM group_participants");
 		} catch (Exception e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while reading from database " + database.getID());
@@ -216,7 +222,7 @@ public class DatabaseHandler {
 						resultSet.getInt("pending"), resultSet.getInt("sent_sender_key")));
 			}
 		} catch (SQLException e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while parsing group_participants_entry from database " + database.getID());
@@ -230,7 +236,7 @@ public class DatabaseHandler {
 			statement = connections[database.getID()].createStatement();
 			resultSet = statement.executeQuery("SELECT * FROM group_participants_history");
 		} catch (Exception e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while reading from database " + database.getID());
@@ -244,7 +250,7 @@ public class DatabaseHandler {
 								resultSet.getString("old_phash"), resultSet.getString("new_phash")));
 			}
 		} catch (SQLException e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out
@@ -258,7 +264,7 @@ public class DatabaseHandler {
 			statement = connections[database.getID()].createStatement();
 			resultSet = statement.executeQuery("SELECT * FROM media_refs");
 		} catch (Exception e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while reading from database " + database.getID());
@@ -270,7 +276,7 @@ public class DatabaseHandler {
 						resultSet.getInt("ref_count")));
 			}
 		} catch (SQLException e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while parsing media_refs_entry from database " + database.getID());
@@ -283,7 +289,7 @@ public class DatabaseHandler {
 			statement = connections[database.getID()].createStatement();
 			resultSet = statement.executeQuery("SELECT * FROM messages");
 		} catch (Exception e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while reading from database " + database.getID());
@@ -310,7 +316,7 @@ public class DatabaseHandler {
 				messageCount++;
 			}
 		} catch (SQLException e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while parsing messages from database " + database.getID());
@@ -325,7 +331,7 @@ public class DatabaseHandler {
 			statement = connections[database.getID()].createStatement();
 			resultSet = statement.executeQuery("SELECT * FROM messages_fts_content");
 		} catch (Exception e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while reading from database " + database.getID());
@@ -337,7 +343,7 @@ public class DatabaseHandler {
 						new MessagesFtsContentEntry(resultSet.getInt("docid"), resultSet.getString("c0content")));
 			}
 		} catch (SQLException e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while parsing messages_fts_content_entry from database " + database.getID());
@@ -351,7 +357,7 @@ public class DatabaseHandler {
 			statement = connections[database.getID()].createStatement();
 			resultSet = statement.executeQuery("SELECT * FROM messages_fts_segdir");
 		} catch (Exception e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while reading from database " + database.getID());
@@ -364,7 +370,7 @@ public class DatabaseHandler {
 						resultSet.getInt("end_block"), resultSet.getBytes("root")));
 			}
 		} catch (SQLException e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while parsing messages_fts_segdir_entry from database " + database.getID());
@@ -378,7 +384,7 @@ public class DatabaseHandler {
 			statement = connections[database.getID()].createStatement();
 			resultSet = statement.executeQuery("SELECT * FROM messages_fts_segments");
 		} catch (Exception e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while reading from database " + database.getID());
@@ -390,7 +396,7 @@ public class DatabaseHandler {
 						new MessagesFtsSegmentsEntry(resultSet.getInt("blockid"), resultSet.getBytes("block")));
 			}
 		} catch (SQLException e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while parsing messages_fts_segments_entry from database " + database.getID());
@@ -403,7 +409,7 @@ public class DatabaseHandler {
 			statement = connections[database.getID()].createStatement();
 			resultSet = statement.executeQuery("SELECT * FROM props");
 		} catch (Exception e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while reading from database " + database.getID());
@@ -415,7 +421,7 @@ public class DatabaseHandler {
 						resultSet.getString("value")));
 			}
 		} catch (SQLException e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while parsing props_entry from database " + database.getID());
@@ -428,7 +434,7 @@ public class DatabaseHandler {
 			statement = connections[database.getID()].createStatement();
 			resultSet = statement.executeQuery("SELECT * FROM receipts");
 		} catch (Exception e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while reading from database " + database.getID());
@@ -442,7 +448,7 @@ public class DatabaseHandler {
 						resultSet.getInt("read_device_timestamp"), resultSet.getInt("played_device_timestamp")));
 			}
 		} catch (SQLException e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while parsing eceipts_entry from database " + database.getID());
@@ -455,7 +461,7 @@ public class DatabaseHandler {
 			statement = connections[database.getID()].createStatement();
 			resultSet = statement.executeQuery("SELECT * FROM sqlite_sequence");
 		} catch (Exception e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while reading from database " + database.getID());
@@ -467,14 +473,14 @@ public class DatabaseHandler {
 						new SqliteSequenceEntry(resultSet.getString("name"), resultSet.getString("seq")));
 			}
 		} catch (SQLException e) {
-			if (WhatsAppDatabaseMerger.stackTraceEnabled) {
+			if (WhatsAppDatabaseMerger.isStackTraceEnabled()) {
 				e.printStackTrace();
 			}
 			System.out.println("Error while parsing sqlite_sequence_entry from database " + database.getID());
 		}
 	}
 
-	public void compareDatabases() {
+	private void compareDatabases() {
 		
 		DatabaseContainer tempDB = new DatabaseContainer(databases.size() + 2);
 		DatabaseContainer workingDB = new DatabaseContainer(databases.size() + 1);
@@ -485,11 +491,12 @@ public class DatabaseHandler {
 			
 			if ((i + 1) < databases.size()) {
 				
+				//TODO CHECK IF DATABASES ARE EXACTLY THE SAME !
 				tempDB = workingDB.compareDatabase(databases.get(i+1));
 				
 				workingDB = tempDB;
 			} else {
-				fixedDatabase = workingDB;
+				setFixedDatabase(workingDB);
 			}
 		}
 	}
@@ -507,67 +514,11 @@ public class DatabaseHandler {
 		}
 	}
 
-	/*
-	{ // TODO code parkplatz
-		int maxMessageCount = 0;
-		int iPlus = 0;
-
-		MessagesEntry messageOne;
-		MessagesEntry messageTwo;
-
-		boolean messagesIdentical;
-		boolean messageFound;
-
-		for (int i = 0; i < databases.size(); i++) {
-
-			iPlus = (i + 1);
-
-			if ((iPlus) < databases.size()) {
-
-				maxMessageCount = 0;
-
-				if (workingDB.getMessageCount() > databases.get(iPlus).getMessageCount()) {
-					maxMessageCount = workingDB.getMessageCount();
-				} else {
-					maxMessageCount = databases.get(iPlus).getMessageCount();
-				}
-
-				// Sichergestellt, das alle Nachrichten abgearbeitet werden
-				for (int j = 0; j <= maxMessageCount; j++) {
-
-					messageOne = workingDB.getMessages().get(j);
-					messageTwo = databases.get(iPlus).getMessages().get(j);
-
-					messagesIdentical = messageOne.compare(messageTwo);
-
-					if (messagesIdentical) {
-						tempDB.addMessageEntry(messageTwo);
-						messageOne.setMessageAlreadyChecked(true);
-						messageTwo.setMessageAlreadyChecked(true);
-					} else {
-
-						messageFound = databases.get(iPlus).isMessageInDatabase(messageOne);
-
-						if (messageFound) {
-							tempDB.addMessageEntry(messageTwo);
-							messageOne.setMessageAlreadyChecked(true);
-							messageTwo.setMessageAlreadyChecked(true);
-						} else {
-							tempDB.addMessageEntry(messageOne);
-							messageOne.setMessageAlreadyChecked(true);
-						}
-
-					}
-				}
-
-				workingDB = tempDB;
-
-			} else {
-				fixedDatabase = workingDB;
-				fixedDatabase.checkRightOrder();
-			}
-
-		}
+	public DatabaseContainer getFixedDatabase() {
+		return fixedDatabase;
 	}
-	*/
+
+	private void setFixedDatabase(DatabaseContainer fixedDatabase) {
+		this.fixedDatabase = fixedDatabase;
+	}
 }

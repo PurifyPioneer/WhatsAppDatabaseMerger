@@ -1,6 +1,10 @@
 package core;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import database.ChatListEntry;
 import database.GroupParticipantsEntry;
@@ -15,8 +19,7 @@ import database.ReceiptsEntry;
 import database.SqliteSequenceEntry;
 
 /**
- * Representation of a whatsapp
- * database. (msgstore database)
+ * Representation of a whatsapp database. (msgstore database)
  * 
  * @author Pommesfee
  * @version 1.0
@@ -24,24 +27,24 @@ import database.SqliteSequenceEntry;
  */
 public class DatabaseContainer {
 
-	//TODO SEPARATE Methods
-	
+	// TODO SEPARATE Methods
+
 	private int id;
-	
+
 	private ArrayList<ChatListEntry> chatList;
 	private ArrayList<GroupParticipantsEntry> groupParticipants;
 	private ArrayList<GroupParticipantsHistoryEntry> groupParticipantsHistory;
 	private ArrayList<MediaRefsEntry> mediaRefs;
 	private ArrayList<MessagesEntry> messages;
-	private ArrayList<MessagesFtsContentEntry> messagesFtscontent;
+	private ArrayList<MessagesFtsContentEntry> messagesFtsContent;
 	private ArrayList<MessagesFtsSegdirEntry> messagesFtsSegdir;
 	private ArrayList<MessagesFtsSegmentsEntry> messagesFtsSegments;
 	private ArrayList<PropsEntry> props;
 	private ArrayList<ReceiptsEntry> receipts;
 	private ArrayList<SqliteSequenceEntry> sqliteSequence;
-	
+
 	private String databasePath = null;
-	
+
 	public DatabaseContainer(int id) {
 
 		setID(id);
@@ -50,83 +53,82 @@ public class DatabaseContainer {
 		setGroupParticipantsHistory(new ArrayList<GroupParticipantsHistoryEntry>());
 		setMediaRefs(new ArrayList<MediaRefsEntry>());
 		setMessages(new ArrayList<MessagesEntry>());
-		setMessagesFtscontent(new ArrayList<MessagesFtsContentEntry>());
+		setMessagesFtsContent(new ArrayList<MessagesFtsContentEntry>());
 		setMessagesFtsSegdir(new ArrayList<MessagesFtsSegdirEntry>());
 		setMessagesFtsSegments(new ArrayList<MessagesFtsSegmentsEntry>());
 		setProps(new ArrayList<PropsEntry>());
 		setReceipts(new ArrayList<ReceiptsEntry>());
 		setSqliteSequence(new ArrayList<SqliteSequenceEntry>());
-		
-		
+
 	}
-	
+
 	public DatabaseContainer(int id, String databasePath) {
-		
+
 		this(id);
 		setDatabasePath(databasePath);
-		
+
 	}
 
 	public void addChatListEntry(ChatListEntry chatListEntry) {
 		getChatList().add(chatListEntry);
 	}
-	
+
 	public void addGroupParticipantsEntry(GroupParticipantsEntry groupParticipantsEntry) {
 		getGroupParticipants().add(groupParticipantsEntry);
 	}
-	
+
 	public void addGroupParticipantsHistoryEntry(GroupParticipantsHistoryEntry GroupParticipantsHistoryEntry) {
 		getGroupParticipantsHistory().add(GroupParticipantsHistoryEntry);
 	}
-	
+
 	public void addMediaRefsEntry(MediaRefsEntry MediaRefsEntry) {
 		getMediaRefs().add(MediaRefsEntry);
 	}
-	
-	public void addMessageEntry(MessagesEntry messageEntry) {	
-		getMessages().add(messageEntry);	
+
+	public void addMessageEntry(MessagesEntry messageEntry) {
+		getMessages().add(messageEntry);
 	}
-	
+
 	public void addMessagesFtsContentEntry(MessagesFtsContentEntry messagesFtsContentEntry) {
-		getMessagesFtscontent().add(messagesFtsContentEntry);
+		getMessagesFtsContent().add(messagesFtsContentEntry);
 	}
-	
+
 	public void addMessagesFtsSegdirEntry(MessagesFtsSegdirEntry messagesFtsSegdirEntry) {
 		getMessagesFtsSegdir().add(messagesFtsSegdirEntry);
 	}
-	
+
 	public void addMEssagesFtsSegmentsEntry(MessagesFtsSegmentsEntry messagesFtsSegmentsEntry) {
 		getMessagesFtsSegments().add(messagesFtsSegmentsEntry);
 	}
-	
+
 	public void addPropsEntry(PropsEntry PropsEntry) {
 		getProps().add(PropsEntry);
 	}
-	
+
 	public void addReceiptsEntry(ReceiptsEntry receiptsEntry) {
 		getReceipts().add(receiptsEntry);
 	}
-	
+
 	public void addSqliteSequenceEntry(SqliteSequenceEntry SqlLiteSequenceEntry) {
 		getSqliteSequence().add(SqlLiteSequenceEntry);
 	}
-	
+
 	public int getID() {
 		return id;
 	}
-	
+
 	private void setID(int id) {
 		this.id = id;
 	}
-	
+
 	public int getMessageCount() {
 		return getMessages().size();
 	}
-	
+
 	private void setDatabasePath(String databasePath) {
 		this.databasePath = databasePath;
 	}
-	
+
 	public String getDatabasePath() {
 		return this.databasePath;
 	}
@@ -166,17 +168,17 @@ public class DatabaseContainer {
 	public ArrayList<MessagesEntry> getMessages() {
 		return messages;
 	}
-	
+
 	private void setMessages(ArrayList<MessagesEntry> messages) {
 		this.messages = messages;
 	}
 
-	public ArrayList<MessagesFtsContentEntry> getMessagesFtscontent() {
-		return messagesFtscontent;
+	public ArrayList<MessagesFtsContentEntry> getMessagesFtsContent() {
+		return messagesFtsContent;
 	}
 
-	private void setMessagesFtscontent(ArrayList<MessagesFtsContentEntry> messagesFtscontent) {
-		this.messagesFtscontent = messagesFtscontent;
+	private void setMessagesFtsContent(ArrayList<MessagesFtsContentEntry> messagesFtsContent) {
+		this.messagesFtsContent = messagesFtsContent;
 	}
 
 	public ArrayList<MessagesFtsSegdirEntry> getMessagesFtsSegdir() {
@@ -219,123 +221,227 @@ public class DatabaseContainer {
 		this.sqliteSequence = sqliteSequence;
 	}
 
-	public boolean isMessageInDatabase(MessagesEntry message) {
-		
-		MessagesEntry thisMessage;
-		
-		for (int i = 0; i < getMessages().size(); i++) {
-			thisMessage = getMessages().get(i);
-			
-			if (!(thisMessage.getMessageAlreadyChecked())) {
-				if (thisMessage.compare(message)) {
-					 return true;
-				}
-			}
-			
-		}
-		
-		return false;
-	}
-	
+	/**
+	 * @param The
+	 *            database you want to compare to.
+	 * @return The compared database (including all fixes[messages, ..])
+	 */
 	public DatabaseContainer compareDatabase(DatabaseContainer database) {
-		
+
 		DatabaseContainer tempDB = new DatabaseContainer(Integer.MAX_VALUE);
-		
-		
-		
+
+		ArrayList<ChatListEntry> chatList = compareChatList(database.getChatList());
+		ArrayList<GroupParticipantsEntry> groupParticipants = compareGroupParticipants(database.getGroupParticipants());
+		ArrayList<GroupParticipantsHistoryEntry> groupParticipantsHistory = compareGroupParticipantsHistory(
+				database.getGroupParticipantsHistory());
+		ArrayList<MediaRefsEntry> mediaRefs = compareMediaRefs(database.getMediaRefs());
+		ArrayList<MessagesEntry> messages = compareMessages(database.getMessages());
+		ArrayList<MessagesFtsContentEntry> messagesFtsContent = compareMessagesFtsContent(
+				database.getMessagesFtsContent());
+		ArrayList<MessagesFtsSegdirEntry> messagesFtsSegdir = compareMessagesFtsSegdir(database.getMessagesFtsSegdir());
+		ArrayList<MessagesFtsSegmentsEntry> messagesFtsSegments = compareMessagesFtsSegments(
+				database.getMessagesFtsSegments());
+		ArrayList<PropsEntry> props = compareProps(database.getProps());
+		ArrayList<ReceiptsEntry> receipts = compareReceipts(database.getReceipts());
+		ArrayList<SqliteSequenceEntry> sqliteSequence = compareSqliteSequence(database.getSqliteSequence());
+
+		tempDB.setChatList(chatList);
+		tempDB.setGroupParticipants(groupParticipants);
+		tempDB.setGroupParticipantsHistory(groupParticipantsHistory);
+		tempDB.setMediaRefs(mediaRefs);
+		tempDB.setMessages(messages);
+		tempDB.setMessagesFtsContent(messagesFtsContent);
+		tempDB.setMessagesFtsSegdir(messagesFtsSegdir);
+		tempDB.setMessagesFtsSegments(messagesFtsSegments);
+		tempDB.setProps(props);
+		tempDB.setReceipts(receipts);
+		tempDB.setSqliteSequence(sqliteSequence);
+
 		return tempDB;
 	}
-	
-	public void checkRightOrder() {
+
+	private ArrayList<ChatListEntry> compareChatList(ArrayList<ChatListEntry> chatList2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private ArrayList<GroupParticipantsEntry> compareGroupParticipants(
+			ArrayList<GroupParticipantsEntry> groupParticipants2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private ArrayList<GroupParticipantsHistoryEntry> compareGroupParticipantsHistory(
+			ArrayList<GroupParticipantsHistoryEntry> groupParticipantsHistory2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private ArrayList<MediaRefsEntry> compareMediaRefs(ArrayList<MediaRefsEntry> mediaRefs2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	// TODO FIX DUPLICATES ERROR
+	private ArrayList<MessagesEntry> compareMessages(ArrayList<MessagesEntry> messagesTwo) {
+
+		// Nachrichten vergleichen, so dass am ende eine tabelle rauskommt in
+		// der jede nachricht einmal enthalten ist.
+
+		ArrayList<MessagesEntry> smallDB;
+		ArrayList<MessagesEntry> bigDB;
+
+		MessagesEntry messageOne = null;
+		MessagesEntry messageTwo = null;
+
+		if (this.getMessages().size() >= messagesTwo.size()) {
+			bigDB = this.getMessages();
+			smallDB = messagesTwo;
+		} else {
+			bigDB = messagesTwo;
+			smallDB = this.getMessages();
+		}
+
+		ArrayList<MessagesEntry> tempDB = new ArrayList<MessagesEntry>(bigDB.size());
+
+		// Nachrichten vergleichen
+		// TODO implement better count
 		
-		//TODO port to croresponding class
-		
-		// Gefixed Databases nach rihtiger reihenfolge ueberpruefen
-		// Sortiert nach timestamps
-		
-		int size = messages.size();
-		
+		//TODO HOW DOES WHATSAPP GENERATE KEY_ID ?!
+		for (int i = 0; i < smallDB.size(); i++) {
+
+			if (i % 100 == 0) {
+				System.out.println("Compared: " + i);
+			}
+
+			if (!smallDB.get(i).getMessageAlreadyChecked()) {
+				messageOne = smallDB.get(i);
+				messageTwo = bigDB.get(i);
+			}
+
+			if (messageOne.equals(messageTwo)) {
+				if (!messageOne.getMessageAlreadyChecked()) {
+					tempDB.add(messageOne);
+					messageOne.setMessageAlreadyChecked(true);
+					messageTwo.setMessageAlreadyChecked(true);
+				}
+			} else {
+				if (!messageOne.getMessageAlreadyChecked()) {
+					tempDB.add(messageOne);
+					messageOne.setMessageAlreadyChecked(true);
+					messageOne.existsInDatabase(i, bigDB);
+
+				}
+			}
+		}
+
+		MessagesEntry messageToCheck;
+		for (int i = 0; i < bigDB.size(); i++) {
+			messageToCheck = bigDB.get(i);
+
+			if (i % 10000 == 0) {
+				System.out.println("Checked: " + i);
+			}
+
+			if (!messageToCheck.getMessageAlreadyChecked()) {
+				if (messageToCheck.existsInDatabase(tempDB)) {
+				} else {
+					tempDB.add(messageToCheck);
+				}
+				messageToCheck.setMessageAlreadyChecked(true);
+			}
+		}
+
+		tempDB = checkDatabase(tempDB);
+
+		return bigDB;
+	}
+
+	private ArrayList<MessagesEntry> checkDatabase(ArrayList<MessagesEntry> tempDB) {
+
+		class MessageTimeStampComparator implements Comparator<MessagesEntry> {
+
+			@Override
+			public int compare(MessagesEntry m1, MessagesEntry m2) {
+
+				long m1TimeStamp = m1.getTimeStamp();
+				long m2TimeStamp = m2.getTimeStamp();
+
+				if (m1TimeStamp > m2TimeStamp) {
+					if (m2.getStatus() != 6) {
+						return 1;
+					} else {
+						return 0;
+					}
+				} else if (m1TimeStamp < m2TimeStamp) {
+					if (m2.getStatus() != 6) {
+						return -1;
+					} else {
+						return 0;
+					}
+				}
+
+				return 0;
+			}
+		}
+
+		Collections.sort(tempDB, new MessageTimeStampComparator());
+
 		MessagesEntry messageOne;
 		MessagesEntry messageTwo;
-		long messageOneTimeStamp = 0;
-		long messageTwoTimeStamp = 0;
-		MessagesEntry messageToCheck;
-		
-		for (int i = 0; i < size; i++) {
-			
-			messageOne = messages.get(i);
-			messageTwo = messages.get(i + 1);
-			
-			messageOneTimeStamp = messageOne.getTimeStamp();
-			messageTwoTimeStamp = messageTwo.getTimeStamp();
-			
-			// Wenn time stamp von nachricht nr. 1 gr��er ist als der von nummer 2
-			// oder wenn gleich.. weitere pr�fung
-			if (messageOneTimeStamp >= messageTwoTimeStamp) {
-				
-				for (int j = 0; j < size; j++) {
-					
-					if (messageOneTimeStamp <= messages.get(j).getTimeStamp()) {
-						
-						messageToCheck = messages.get(j);
-						int messageOneID = messageOne.get_id();
-						int messageToCheckID = messageToCheck.get_id();
-						long messageToCheckTimeStamp = messageToCheck.getTimeStamp();
-						
-						if (messageOneTimeStamp < messageToCheckTimeStamp) {
-							
-							messages.remove(i);
-							messages.add(j, messageOne);
-							
-						} else if (messageOneTimeStamp == messageToCheckTimeStamp) {
-							
-							if (messageOneID < messageToCheckID) {
-								messages.remove(i);
-								messages.add(j, messageOne);
-							} else if (messageOneID > messageToCheckID) {
-								messages.remove(i);
-								messages.add((j + 1),messageOne);
-							} else {
-								//TODO WENN ID UND TIMESTAMP GLEICH
-								//SONDERFALL
-								//UNWAHRSCHEINLICH
-								System.out.println("checkRightOrder() ERROR: TIMESTAP UND ID GLEICH !");
-							}
-							
-						}
-					
-						
-					} else {
-						
-						//Wenn nicht gefunden entferne nachricht und f�ge als letzte hinzu
-						messages.remove(i);
-						messages.add(messageOne);
-						
-					}
-					
-				}
-				
-			}
-				
-		}
-			
-		// IDs anpassend, sodass jede id nur einmal vorkommt und alle ids in richtiger reihenfolge (aufsteigend) sind
-		for (int i = 0; i < messages.size(); i++) {
-			
-			messageOne = messages.get(i);
-			messageTwo = messages.get(i + 1);
-			
-			int messageOneID = messageOne.get_id();
-			int messageTwoID = messageTwo.get_id();
-			
+
+		int messageOneID;
+		int messageTwoID;
+
+		for (int i = 1; i < tempDB.size(); i++) {
+
+			messageOne = tempDB.get(i - 1);
+			messageTwo = tempDB.get(i);
+
+			messageOneID = messageOne.get_id();
+			messageTwoID = messageTwo.get_id();
+
 			if (messageOneID >= messageTwoID) {
 				do {
 					messageTwo.increment_id();
-				} while (messageOneID >= messageTwoID);
-				
+				} while (messageOneID >= messageTwo.get_id());
 			}
-			
-		}	
+		}
+
+		return tempDB;
 	}
-	
+
+	private ArrayList<MessagesFtsContentEntry> compareMessagesFtsContent(
+			ArrayList<MessagesFtsContentEntry> messagesFtsContent2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private ArrayList<MessagesFtsSegdirEntry> compareMessagesFtsSegdir(
+			ArrayList<MessagesFtsSegdirEntry> messagesFtsSegdir2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private ArrayList<MessagesFtsSegmentsEntry> compareMessagesFtsSegments(
+			ArrayList<MessagesFtsSegmentsEntry> messagesFtsSegments2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private ArrayList<PropsEntry> compareProps(ArrayList<PropsEntry> props2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private ArrayList<ReceiptsEntry> compareReceipts(ArrayList<ReceiptsEntry> receipts2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private ArrayList<SqliteSequenceEntry> compareSqliteSequence(ArrayList<SqliteSequenceEntry> sqliteSequence2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
